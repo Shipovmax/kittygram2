@@ -1,56 +1,61 @@
-# Yatube API (Kittygram2)
+# Kittygram 2
 
-### Описание
-Проект представляет собой API для социальной сети Yatube. Он позволяет управлять публикациями, комментариями и подписками через REST-запросы. В проекте реализована аутентификация по токенам и автоматическое определение автора при создании поста.
+Django REST Framework API for cats — next learning step after [kittygram_plus](https://github.com/Shipovmax/kittygram_plus). Replaces the custom `Owner` model with Django's built-in `User` and adds read-only user endpoints.
 
-### Технологии
-* **Python 3.9** (важно: версии 3.12+ не поддерживают Django 3.2 из-за удаления `distutils`)
-* **Django 3.2.3**
-* **Django Rest Framework 3.12.4**
-* **SQLite3**
+> For the production-ready version see [kittygram_backend](https://github.com/Shipovmax/kittygram_backend).
 
 ---
 
-### Как запустить проект:
+## What's different from kittygram_plus
 
-Клонировать репозиторий и перейти в него в командной строке:
+- **Owner → User** — `Cat.owner` is now a FK to `django.contrib.auth.User` instead of a custom `Owner` model
+- **UserViewSet** — read-only (`ReadOnlyModelViewSet`); exposes `/users/` with `id`, `username`, `first_name`, `last_name`, and reverse `cats` relation
+- **AchievementViewSet** — full CRUD endpoint for achievements at `/achievements/`
+- **UserSerializer** — `cats` as `StringRelatedField(many=True, read_only=True)`
+- **JWT via simplejwt** — `djangorestframework-simplejwt 4.8` instead of webcolors; `/auth/jwt/create/`, `/auth/jwt/refresh/`
 
-```
-git clone [https://github.com/yandex-praktikum/kittygram2.git](https://github.com/yandex-praktikum/kittygram2.git)
-```
-```
+---
+
+## Tech Stack
+
+| | |
+|---|---|
+| Framework | Django 3.2, DRF 3.12 |
+| Auth | Djoser 2.1 + SimpleJWT 4.8 |
+| Database | SQLite3 |
+
+---
+
+## Quick Start
+
+```bash
+git clone https://github.com/Shipovmax/kittygram2
 cd kittygram2
-```
-Cоздать и активировать виртуальное окружение (рекомендуется использовать Python 3.9):
-```
-python3.9 -m venv env
-```
-```
-source env/bin/activate
-```
-```
-python3 -m pip install --upgrade pip
-```
-Установить зависимости из файла requirements.txt:
-```
+
+python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-```
-Выполнить миграции:
-```
-python3 manage.py migrate
-```
-Запустить проект:
-```
-python3 manage.py runserver
+
+python manage.py migrate
+python manage.py runserver
 ```
 
-Основные эндпоинты API:
-POST /api/v1/api-token-auth/ — получение токена аутентификации.
+API at `http://127.0.0.1:8000/`
 
-GET /api/v1/posts/ — получение списка всех публикаций.
+---
 
-POST /api/v1/posts/ — создание новой публикации (только для авторизованных пользователей). Автор подставляется автоматически из токена.
+## Endpoints
 
-GET /api/v1/posts/{id}/ — получение отдельной публикации по её ID.
+| Endpoint | ViewSet | Actions |
+|----------|---------|---------|
+| `/cats/` | `CatViewSet` | Full CRUD |
+| `/users/` | `UserViewSet` | Read-only |
+| `/achievements/` | `AchievementViewSet` | Full CRUD |
+| `/auth/jwt/create/` | — | Obtain JWT pair |
+| `/auth/jwt/refresh/` | — | Refresh token |
 
-PUT/PATCH/DELETE /api/v1/posts/{id}/ — редактирование и удаление публикации (доступно только автору).
+---
+
+## Author
+
+- GitHub: [Shipovmax](https://github.com/Shipovmax)
+- Email: shipov.max@icloud.com
