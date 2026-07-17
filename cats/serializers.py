@@ -1,7 +1,7 @@
-from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
-
 import datetime as dt
+from typing import Any
+
+from rest_framework import serializers
 
 from .models import CHOICES, Achievement, AchievementCat, Cat, User
 
@@ -33,10 +33,19 @@ class CatSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'color', 'birth_year', 'achievements', 'owner',
                   'age')
 
-    def get_age(self, obj):
-        return dt.datetime.now().year - obj.birth_year
+    def get_age(self, obj: Cat) -> int:
+        return dt.date.today().year - obj.birth_year
 
-    def create(self, validated_data):
+    def validate_birth_year(self, value: int) -> int:
+        current_year = dt.date.today().year
+        if value > current_year:
+            raise serializers.ValidationError(
+                f'birth_year cannot be in the future (got {value}, '
+                f'current year is {current_year})'
+            )
+        return value
+
+    def create(self, validated_data: dict[str, Any]) -> Cat:
         if 'achievements' not in self.initial_data:
             cat = Cat.objects.create(**validated_data)
             return cat
@@ -44,7 +53,7 @@ class CatSerializer(serializers.ModelSerializer):
             achievements = validated_data.pop('achievements')
             cat = Cat.objects.create(**validated_data)
             for achievement in achievements:
-                current_achievement, status = Achievement.objects.get_or_create(
+                current_achievement, _ = Achievement.objects.get_or_create(
                     **achievement)
                 AchievementCat.objects.create(
                     achievement=current_achievement, cat=cat)
