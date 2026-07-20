@@ -1,7 +1,6 @@
 from rest_framework import viewsets
 
 from .models import Achievement, Cat, User
-
 from .serializers import AchievementSerializer, CatSerializer, UserSerializer
 
 

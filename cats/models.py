@@ -2,11 +2,11 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 CHOICES = (
-    ('Gray', 'Gray'),
-    ('Black', 'Black'),
-    ('White', 'White'),
-    ('Ginger', 'Ginger'),
-    ('Mixed', 'Mixed'),
+    ("Gray", "Gray"),
+    ("Black", "Black"),
+    ("White", "White"),
+    ("Ginger", "Ginger"),
+    ("Mixed", "Mixed"),
 )
 
 User = get_user_model()
@@ -23,9 +23,8 @@ class Cat(models.Model):
     name = models.CharField(max_length=16)
     color = models.CharField(max_length=16, choices=CHOICES)
     birth_year = models.IntegerField()
-    owner = models.ForeignKey(
-        User, related_name='cats', on_delete=models.CASCADE)
-    achievements = models.ManyToManyField(Achievement, through='AchievementCat')
+    owner = models.ForeignKey(User, related_name="cats", on_delete=models.CASCADE)
+    achievements = models.ManyToManyField(Achievement, through="AchievementCat")
 
     def __str__(self) -> str:
         return self.name
@@ -36,4 +35,4 @@ class AchievementCat(models.Model):
     cat = models.ForeignKey(Cat, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return f'{self.achievement} {self.cat}'
+        return f"{self.achievement} {self.cat}"
